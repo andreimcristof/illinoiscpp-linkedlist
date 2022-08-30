@@ -279,22 +279,91 @@ LinkedList<T> LinkedList<T>::merge(const LinkedList<T>& other) const {
   // above and in the instructions PDF.
 
   // edge case: left list empty
-  if(left.size() == 0) merged = right;
+  if(left.size() == 0) {
+    merged = right;
+    return merged;
+  };
 
   // edge case: right list empty;
-  if(right.size() == 0) merged = left;
+  if(right.size() == 0) {
+    merged = left;
+    return merged;
+  };
 
-  // int biggerSizeList = left.size() > right.size() ? left.size(): right.size();
+  Node* curLeft = left.getHeadPtr();
+  Node* prevLeft = nullptr;
 
-  // for(int i = 0; i < biggerSizeList; i++) {
+  Node* curRight = right.getHeadPtr();
+  Node* prevRight = nullptr;
 
-  // }
+  // populating merged at start with first values
+  if(curLeft->data >= curRight->data) {
+    merged.pushFront(curLeft->data); 
+    merged.pushFront(curRight->data);
+  } else {
+    merged.pushFront(curRight->data);
+    merged.pushFront(curLeft->data);
+  }
+  left.popFront();
+  right.popFront();
 
-  // for (int i = 0; i < left.size(); i++) {
-  //   for (int j = 0; j < right.size(); j++) {
+  // std::cout << "left.size(): " << left.size() << std::endl;
+  // std::cout <<"right.size(): " << right.size() << std::endl;
+  // std::cout <<"merged.size(): " << merged.size() << std::endl;  
 
-  //   }
-  // }
+//  left   1_   5   10    20
+//  right  2_   4   11    19
+  
+  while(left.size() > 0 || right.size() > 0) {
+    // std::cout << "new iteration. remaining in left: " << left.size() << std::endl;
+
+    auto chooseList = [&](LinkedList<T> &left, LinkedList<T> &right) -> LinkedList<T>& {
+      // if any list is empty, the other one has priority
+      if(left.size() == 0) return right;
+      if(right.size() == 0) return left;
+      
+      // left or right, lower or equal value takes priority
+      if(left.front() <= right.front()) {
+        std::cout << "chosen left" << std::endl;
+        return left;
+      } else {
+        std::cout << "chosen right" << std::endl;
+        return right;
+      }
+    };
+
+
+    LinkedList<T> &lst = chooseList(left, right);
+
+    while(lst.size() > 0 && lst.front() <= merged.front()) {
+      merged.pushFront(lst.front());
+      lst.popFront();
+      std::cout << "while 1: " << std::endl;
+      std::cout << "lst size: " << lst.size() << std::endl;
+      std::cout << "left.size(): " << left.size() << std::endl;
+      std::cout <<"right.size(): " << right.size() << std::endl;
+    }
+
+    lst = chooseList(left, right);
+    while(lst.size() > 0 && lst.front() <= merged.back()) {
+      merged.pushBack(lst.front());
+      lst.popFront();
+      std::cout << "while 2: " << std::endl;
+      std::cout << "lst size: " << lst.size() << std::endl;
+      std::cout << "left.size(): " << left.size() << std::endl;
+      std::cout <<"right.size(): " << right.size() << std::endl; 
+    }
+
+    lst = chooseList(left, right);
+    while(lst.size() > 0 && lst.front() > merged.back()) {
+      merged.pushBack(lst.front());
+      lst.popFront();
+      std::cout << "while 3: " << std::endl;
+      std::cout << "lst size: " << lst.size() << std::endl;
+      std::cout << "left.size(): " << left.size() << std::endl;
+      std::cout <<"right.size(): " << right.size() << std::endl;
+    }
+  }
   // Hints:
   // 1. Assuming that the left and right lists are already sorted, remember
   //    that the smallest items are already available at the front. You can
