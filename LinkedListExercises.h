@@ -95,9 +95,6 @@ void LinkedList<T>::insertOrdered(const T& newData) {
   // You may also need to update the head_ and tail_ pointers in some
   // cases. Also update the size_ variable of the list.
 
-  //   prev = cur; // save current node as previous
-  // cur = cur->next; // move to next
-  
   if(!cur->next) {
     if(cur->data <= newData) {
       pushFront(newData);
@@ -108,6 +105,19 @@ void LinkedList<T>::insertOrdered(const T& newData) {
     }
   }
 
+  // edge case: check head. cur is still head here, it was not moved to next yet
+  if(cur->data > newData) {
+    pushFront(newData);
+    return;
+  }
+
+  // edge case: check tail. if its less, and we also know the list is ordered, then it should be sent to back.
+  if(tail_->data < newData){
+    pushBack(newData);
+    return;
+  }
+
+  // manual insertion case: insert between A and B, if A < newData < B
   while(cur->next != nullptr) {
     prev = cur;
     cur = cur->next;
@@ -116,14 +126,12 @@ void LinkedList<T>::insertOrdered(const T& newData) {
       prev->next = newNode;
       newNode->prev = prev;
       newNode->next = cur;
-
-      // this crashes:
-      // cur->prev = newNode;
-      // size_++;
-    //   return;
-    }
+      cur->prev = newNode;
+      size_++;
+      return;
+    } 
   }
-  
+
   // -----------------------------------------------------------
   // TODO: Your code here!
   // -----------------------------------------------------------
