@@ -80,7 +80,50 @@
 
 template <typename T>
 void LinkedList<T>::insertOrdered(const T& newData) {
+  https://isocpp.org/wiki/faq/const-correctness
+  // if list is empty update head
+  if(!head_) {
+    pushFront(newData);
+    return;
+  }
 
+  Node* prev = nullptr; // init previous
+  Node* cur = head_; // init current
+
+  // When you insert the node, make sure to update any and all pointers
+  // between it and adjacent nodes accordingly (next and prev pointers).
+  // You may also need to update the head_ and tail_ pointers in some
+  // cases. Also update the size_ variable of the list.
+
+  //   prev = cur; // save current node as previous
+  // cur = cur->next; // move to next
+  
+  if(!cur->next) {
+    if(cur->data <= newData) {
+      pushFront(newData);
+      return;
+    } else {
+      pushBack(newData);
+      return;
+    }
+  }
+
+  while(cur->next != nullptr) {
+    prev = cur;
+    cur = cur->next;
+    if(cur->data > newData) {
+      Node* newNode = new Node(newData);
+      prev->next = newNode;
+      newNode->prev = prev;
+      newNode->next = cur;
+
+      // this crashes:
+      // cur->prev = newNode;
+      // size_++;
+    //   return;
+    }
+  }
+  
   // -----------------------------------------------------------
   // TODO: Your code here!
   // -----------------------------------------------------------
