@@ -80,7 +80,6 @@
 
 template <typename T>
 void LinkedList<T>::insertOrdered(const T& newData) {
-  https://isocpp.org/wiki/faq/const-correctness
   // if list is empty update head
   if(!head_) {
     pushFront(newData);
@@ -178,7 +177,6 @@ void LinkedList<T>::insertOrdered(const T& newData) {
   // they don't handle the null pointer at the tail properly. Be careful
   // to update all next, prev, head_, and tail_ pointers as needed on your
   // new node or on those existing nodes that are adjacent to the new node.
-
 }
 
 /********************************************************************
@@ -280,6 +278,23 @@ LinkedList<T> LinkedList<T>::merge(const LinkedList<T>& other) const {
   // Please implement this function according to the description
   // above and in the instructions PDF.
 
+  // edge case: left list empty
+  if(left.size() == 0) merged = right;
+
+  // edge case: right list empty;
+  if(right.size() == 0) merged = left;
+
+  // int biggerSizeList = left.size() > right.size() ? left.size(): right.size();
+
+  // for(int i = 0; i < biggerSizeList; i++) {
+
+  // }
+
+  // for (int i = 0; i < left.size(); i++) {
+  //   for (int j = 0; j < right.size(); j++) {
+
+  //   }
+  // }
   // Hints:
   // 1. Assuming that the left and right lists are already sorted, remember
   //    that the smallest items are already available at the front. You can
