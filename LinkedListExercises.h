@@ -311,59 +311,128 @@ LinkedList<T> LinkedList<T>::merge(const LinkedList<T>& other) const {
   // std::cout <<"right.size(): " << right.size() << std::endl;
   // std::cout <<"merged.size(): " << merged.size() << std::endl;  
 
-//  left   1_   5   10    20
-//  right  2_   4   11    19
-  
-  while(left.size() > 0 || right.size() > 0) {
-    // std::cout << "new iteration. remaining in left: " << left.size() << std::endl;
-
-    auto chooseList = [&](LinkedList<T> &left, LinkedList<T> &right) -> LinkedList<T>& {
-      // if any list is empty, the other one has priority
-      if(left.size() == 0) return right;
-      if(right.size() == 0) return left;
-      
-      // left or right, lower or equal value takes priority
-      if(left.front() <= right.front()) {
-        std::cout << "chosen left" << std::endl;
-        return left;
-      } else {
-        std::cout << "chosen right" << std::endl;
-        return right;
-      }
+    auto debug = [&](
+      LinkedList<T> &left, 
+      LinkedList<T> &right
+    ) {
+      std::cout << "left.size(): " << left.size() << std::endl;
+      std::cout <<"right.size(): " << right.size() << std::endl;
     };
 
+    // auto chooseList = [&](LinkedList<T> &left, LinkedList<T> &right) -> LinkedList<T>& {
+    //   // if any list is empty, the other one has priority
+    //   if(left.size() == 0) return right;
+    //   if(right.size() == 0) return left;
+      
+    //   // std::cout << "comparing left front: " << left.front() << " with right front: " << right.front() << std::endl;
+    //   // left or right, lower or equal value takes priority
+    //   if(left.front() <= right.front()) {
+    //     std::cout << "chosen left: " << left.front() << std::endl;
+    //     return left;
+    //   } else {
+    //     std::cout << "chosen right: " << right.front() << std::endl;
+    //     return right;
+    //   }
+    // };
 
-    LinkedList<T> &lst = chooseList(left, right);
+//  left   1_   5   10    20
+//  right  2_   4   11    19
 
-    while(lst.size() > 0 && lst.front() <= merged.front()) {
-      merged.pushFront(lst.front());
-      lst.popFront();
-      std::cout << "while 1: " << std::endl;
-      std::cout << "lst size: " << lst.size() << std::endl;
-      std::cout << "left.size(): " << left.size() << std::endl;
-      std::cout <<"right.size(): " << right.size() << std::endl;
+  while(left.size() > 0 || right.size() > 0) {
+    debug(left, right);
+
+    //scenario A: both lists have elements:
+    if(left.size() > 0 && right.size() > 0) {
+      
+      // left < right
+      if( left.front() < right.front()) 
+      {
+        if(left.front() <= merged.front()) merged.pushFront(left.front());
+        if(left.front() > merged.back()) merged.pushBack(left.front());
+        left.popFront();
+      }
+
+      // left == right
+      if(left.front() == right.front()) 
+      {
+        if(left.front() <= merged.front()) merged.pushFront(left.front());
+        if(left.front() > merged.back()) merged.pushBack(left.front());
+        left.popFront();
+        if(right.front() <= merged.front()) merged.pushFront(right.front());
+        if(right.front() > merged.back()) merged.pushBack(right.front());
+        right.popFront();
+      }
+
+      // left > right
+      if(left.front() > right.front())
+      {
+        if(right.front() <= merged.front()) merged.pushFront(right.front());
+        if(right.front() > merged.back()) merged.pushBack(right.front());
+        right.popFront();
+      }
+
     }
 
-    lst = chooseList(left, right);
-    while(lst.size() > 0 && lst.front() <= merged.back()) {
-      merged.pushBack(lst.front());
-      lst.popFront();
-      std::cout << "while 2: " << std::endl;
-      std::cout << "lst size: " << lst.size() << std::endl;
-      std::cout << "left.size(): " << left.size() << std::endl;
-      std::cout <<"right.size(): " << right.size() << std::endl; 
-    }
+     
+    //scenario B: left list has elements, right list empty
+    if(left.size() > 0 && right.size() == 0) {
+      
+      if(left.front() < merged.front())
+      {
+        merged.pushFront(left.front());
+        left.popFront();
+      }
 
-    lst = chooseList(left, right);
-    while(lst.size() > 0 && lst.front() > merged.back()) {
-      merged.pushBack(lst.front());
-      lst.popFront();
-      std::cout << "while 3: " << std::endl;
-      std::cout << "lst size: " << lst.size() << std::endl;
-      std::cout << "left.size(): " << left.size() << std::endl;
-      std::cout <<"right.size(): " << right.size() << std::endl;
+      // left front >= merged back
+      if(left.front() >= merged.back()) {
+        merged.pushBack(left.front());
+        left.popFront();
+      }
     }
+     
+    
+    //scenario C: left list empty, right list has elements
+     if(left.size() == 0 && right.size() > 0) {
+
+      if(right.front() < merged.front())
+      {
+        merged.pushFront(right.front());
+        right.popFront();
+      }
+
+      if(right.front() >= merged.back()) {
+        merged.pushBack(right.front());
+        right.popFront();
+      }
+     }
+      
+
+    // LinkedList<T> &lst = chooseList(left, right);
+         
+    // while(lst.size() > 0 && lst.front() <= merged.front()) {
+    //   std::cout << "while 1: comparing lst front: " << lst.front() << " with merged front: " << merged.front() << std::endl;
+    //   merged.pushFront(lst.front());
+    //   lst.popFront();
+    //   debug(left, right, lst);
+    // }
+
+    // lst = chooseList(left, right);
+    // while(lst.size() > 0 && lst.front() <= merged.back()) {
+    //   std::cout << "while 2: comparing lst front: " << lst.front() << " with merged back: " << merged.back() << std::endl;
+    //   merged.pushBack(lst.front());
+    //   lst.popFront();      
+    //   debug(left, right, lst);
+    // }
+
+    // lst = chooseList(left, right);
+    // while(lst.size() > 0 && lst.front() > merged.back()) {
+    //   std::cout << "while 3: comparing lst front: " << lst.front() << " with merged back: " << merged.back() << std::endl;
+    //   merged.pushBack(lst.front());
+    //   lst.popFront();
+    //   debug(left, right, lst);
+    // }
   }
+  
   // Hints:
   // 1. Assuming that the left and right lists are already sorted, remember
   //    that the smallest items are already available at the front. You can
